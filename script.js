@@ -7,9 +7,12 @@ const fotos = [
 ];
 
 // OPCIONES DISPONIBLES
-const opciones = ["David", "Laia", "Edgar", "Belen", "Arnau","Dani", "Vero", "Dalmau", "Maju"];
+const opciones = ["David", "Laia", "Edgar", "Belen", "Arnau", "Dani", "Vero", "Dalmau", "Maju"];
 
 const container = document.getElementById("game-container");
+
+// Nombres globalmente acertados
+let nombresAcertados = new Set();
 
 // Mantiene referencia del selector activo
 let selectorActivo = null;
@@ -38,21 +41,18 @@ fotos.forEach((foto, idx) => {
     const nombreDiv = document.getElementById(`nombre-${idx}`);
     const closeBtn = document.getElementById(`close-${idx}`);
 
-    // === CREAR BOCADILLOS DE OPCIONES ===
+    // === CREAR BOCADILLOS ===
     opciones.forEach(nombre => {
         const chip = document.createElement("div");
         chip.className = "bocadillo";
         chip.textContent = nombre;
 
         chip.addEventListener("click", () => {
-
-            // Misma opción → solo cerrar
             if (foto.seleccion === nombre) {
                 cerrarSelector(selector, img);
                 return;
             }
 
-            // Nueva selección
             foto.seleccion = nombre;
 
             nombreDiv.textContent = nombre;
@@ -68,11 +68,10 @@ fotos.forEach((foto, idx) => {
         selector.appendChild(chip);
     });
 
-    // === ABRIR SELECTOR AL CLICAR LA FOTO ===
+    // === ABRIR SELECTOR ===
     img.addEventListener("click", () => {
-
-        // Si otro selector estaba abierto → cerrarlo
-        if (selectorActivo && selectorActivo !== selector) {
+        // Cerrar anterior
+        if (selectorActivo && selectorActivo.selector !== selector) {
             cerrarSelector(selectorActivo.selector, selectorActivo.img);
         }
 
@@ -80,32 +79,38 @@ fotos.forEach((foto, idx) => {
         selector.style.display = visible ? "none" : "flex";
         img.classList.toggle("foto-blur", !visible);
 
-        // Guardar nuevo activo
         selectorActivo = visible ? null : { selector, img };
 
-        // Desactivar bocadillo seleccionado
         const seleccionActual = foto.seleccion;
-        [...selector.children].forEach(elem => {
-            if (!elem.classList.contains("bocadillo")) return;
 
-            if (elem.textContent === seleccionActual) {
-                elem.classList.add("disabled");
-            } else {
-                elem.classList.remove("disabled");
+        // === ACTUALIZAR BOCADILLOS (desactivación global + local) ===
+        [...selector.children].forEach(chip => {
+            if (!chip.classList.contains("bocadillo")) return;
+
+            const nombre = chip.textContent;
+
+            chip.classList.remove("disabled");
+
+            // 1. Desactivar el nombre ya seleccionado en esta foto
+            if (nombre === seleccionActual) {
+                chip.classList.add("disabled");
+                return;
+            }
+
+            // 2. Desactivar nombres globalmente acertados
+            if (nombresAcertados.has(nombre)) {
+                chip.classList.add("disabled");
+                return;
             }
         });
     });
 
     // === X PARA CERRAR ===
-    closeBtn.addEventListener("click", () => {
-        cerrarSelector(selector, img);
-    });
+    closeBtn.addEventListener("click", () => cerrarSelector(selector, img));
 
-    // === CERRAR SI SE TOCA FUERA DEL SELECTOR ===
-    selector.addEventListener("click", (e) => {
-        if (e.target === selector) {
-            cerrarSelector(selector, img);
-        }
+    // === CERRAR AL TOCAR FUERA ===
+    selector.addEventListener("click", e => {
+        if (e.target === selector) cerrarSelector(selector, img);
     });
 });
 
@@ -121,12 +126,13 @@ function cerrarSelector(selector, img) {
 // === CHECK ===
 document.getElementById("check-btn").addEventListener("click", () => {
 
-    // Cerrar cualquier selector abierto
-    if (selectorActivo) {
-        cerrarSelector(selectorActivo.selector, selectorActivo.img);
-    }
+    // Reset nombres acertados
+    nombresAcertados.clear();
 
-    // Evaluar respuestas
+    // Cerrar selector activo
+    if (selectorActivo) cerrarSelector(selectorActivo.selector, selectorActivo.img);
+
+    // Evaluar fotos
     fotos.forEach((foto, idx) => {
         const overlay = document.getElementById(`overlay-${idx}`);
         overlay.className = "overlay";
@@ -134,6 +140,10 @@ document.getElementById("check-btn").addEventListener("click", () => {
         if (foto.seleccion === foto.correcta) {
             overlay.textContent = "✔ Correcto";
             overlay.classList.add("correcto");
+
+            // Añadir nombre bloqueado globalmente
+            nombresAcertados.add(foto.correcta);
+
         } else {
             overlay.textContent = "✘ Incorrecto";
             overlay.classList.add("incorrecto");
