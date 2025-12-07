@@ -1,35 +1,191 @@
+/* === RESET === */
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0;
+    padding: 0;
 }
 
+/* === TÍTULO === */
 h1 {
-    margin-bottom: 20px;
+    text-align: center;
+    margin: 20px 0;
 }
 
+/* === FOTO === */
 .foto-item {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    width: 250px;
+    width: 100%;
+    position: relative;
+    margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
-.foto-item img {
-    width: 200px;
+.foto-img {
+    width: 100%;
     display: block;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    transition: filter .3s ease;
 }
 
-#check-btn {
-    padding: 10px 20px;
-    margin-top: 20px;
-    cursor: pointer;
+/* === TEXTO SELECCIONADO === */
+/* NOMBRE ELEGIDO DENTRO DE LA FOTO */
+/* NOMBRE ELEGIDO - oculto por defecto */
+.nombre-elegido {
+    display: none; /* totalmente invisible */
+}
+
+/* Solo cuando tiene contenido (clase show) se muestra y aplica estilo */
+.nombre-elegido.show {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    background: rgba(0,0,0,0.55);
+    color: white;
+
+    padding: 8px 14px;
+    border-radius: 8px;
+
+    font-size: 26px;
+    font-weight: bold;
+    z-index: 5;
+}
+
+
+
+
+/* === OVERLAY DE RESULTADO === */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    opacity: 0;
+    transition: opacity .3s;
+    pointer-events: none;
 }
 
 .correcto {
-    color: green;
+    background: rgba(0, 150, 0, 0.35);
+    opacity: 1;
 }
 
 .incorrecto {
-    color: red;
+    background: rgba(200, 0, 0, 0.35);
+    opacity: 1;
 }
+
+/* === MENÚ FLOTE SOBRE LA FOTO === */
+.menu-sobre-foto {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.95);
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow-y: auto;
+}
+
+/* CERRAR X */
+.menu-close {
+    text-align: right;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+}
+
+/* LISTADO */
+.menu-opcion {
+    padding: 18px;
+    font-size: 20px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
+.menu-opcion:last-child {
+    border-bottom: none;
+}
+
+.menu-opcion:hover {
+    background: #eee;
+}
+
+/* BLUR FOTO */
+.foto-blur {
+    filter: blur(6px) brightness(0.6);
+}
+
+/* CHECK FLOTANTE */
+#check-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 50%;
+    padding: 22px 0;
+
+    font-size: 36px;
+    font-weight: 900;
+
+    background: linear-gradient(90deg, #007bff, #00b7ff);
+    color: white;
+
+    border: none;
+    border-radius: 18px;
+
+    cursor: pointer;
+    z-index: 20;
+
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.25);
+    text-transform: uppercase;
+    transition: transform .1s ease, box-shadow .1s ease;
+}
+
+#check-btn:active {
+    transform: translateX(-50%) scale(0.96);
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.35);
+}
+/* === TÍTULO CHILI PICONAZO === */
+h1 {
+    font-size: 50px;
+    font-weight: 900;
+    text-align: center;
+    margin: 25px 0 30px 0;
+
+    background: linear-gradient(90deg, #ff3d3d, #ff7d00, #ffbb00, #ff7d00, #ff3d3d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: 0px 4px 10px rgba(0,0,0,0.25);
+
+    letter-spacing: 2px;
+    padding-bottom: 10px;
+    position: relative;
+}
+
+/* Línea decorativa debajo del título */
+h1::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 60%;
+    height: 4px;
+    background: linear-gradient(90deg, #ff3d3d, #ff7d00, #ffbb00);
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
